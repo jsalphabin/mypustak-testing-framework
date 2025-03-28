@@ -69,7 +69,7 @@ def login_and_search():
   time.sleep(2)
   perform_search()
 
-def add_single_product_to_cart():
+#def add_single_product_to_cart():
    
 
 def test_login_valid():
