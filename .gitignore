@@ -1,4 +1,41 @@
-.vscode
-.pytest_cache
-__pycache__
-test/__pycache__
+# VS Code settings and workspace files
+.vscode/
+
+# Python bytecode and cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyo
+*.pdb
+
+# pytest cache
+.pytest_cache/
+
+# Unit test and coverage reports
+htmlcov/
+coverage.xml
+*.cover
+.cache/
+nosetests.xml
+test/__pycache__/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and debugging files
+logs/
+*.log
+*.sqlite3
+
+# macOS and system-specific files
+.DS_Store
+Thumbs.db

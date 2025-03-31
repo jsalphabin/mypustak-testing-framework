@@ -6,23 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import Urls, DummyData, LocateById,LocateByClass,LocateByXpath
 
-def perform_login(driver,email, password):
-   
-  WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, LocateById.LOGIN_BUTTON_ID))).click()
-  if email:
-    email_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_INPUT_XPATH)))
-    email_input.clear()
-    email_input.send_keys(email)
-
-  WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, LocateByClass.POPUP_LOGIN_CLASS))).click()
-
-  if password:
-      password_input = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.PASSWORD_INPUT_XPATH)))
-      password_input.clear()
-      password_input.send_keys(password)
-
-      WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, LocateByClass.POPUP_LOGIN_CLASS))).click()
-
 def add_to_cart(driver):
    add_to_cart=WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.ADD_TO_CART_XPATH)))
    add_to_cart.click()
@@ -39,11 +22,6 @@ def perform_search(driver):
   search_bar.send_keys("Computer")
 
   search_button.click()
-   
-def login_and_search(driver):
-  perform_login(driver,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
-  time.sleep(2)
-  perform_search()
 
 
 def verify_cart(driver):
@@ -67,7 +45,7 @@ def check_if_zero(driver):
    zero=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.ZERO_XPATH)))
    assert zero.text=='My Cart (0)'
 
-def test_login_valid(setup_teardown):
+def test_login_valid(setup_teardown,perform_login):
   """Test login with valid credentials"""
   perform_login(setup_teardown,DummyData.CORRECT_EMAIL, DummyData.CORRECT_PASSWORD)
 
@@ -76,14 +54,14 @@ def test_login_valid(setup_teardown):
   ).text
   assert login_text == 'Hi! Reader', "Login was unsuccessful!"
 
-def test_login_invalid_password(setup_teardown):
+def test_login_invalid_password(setup_teardown,perform_login):
   """Test login with incorrect password"""
   perform_login(setup_teardown,DummyData.CORRECT_EMAIL, DummyData.INCORRECT_PASSWORD)
 
   error_message = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.ID, LocateById.SNACKBAR_ID))).text
   assert "Entered email or password is incorrect" in error_message, "Incorrect password error not displayed!"
 
-def test_login_empty_email(setup_teardown):
+def test_login_empty_email(setup_teardown,perform_login):
     """Test login with empty email"""
     try:
         perform_login(setup_teardown,None, None)  # No password needed if email is empty
@@ -91,7 +69,7 @@ def test_login_empty_email(setup_teardown):
         error_message = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_ERROR_XPATH))).text
         assert "Enter valid email" in error_message, "Empty email error not displayed!"
 
-def test_login_incorrect_email(setup_teardown):
+def test_login_incorrect_email(setup_teardown,perform_login):
   """Test login with invalid email"""
   try:
     perform_login(setup_teardown,DummyData.INCORRECT_EMAIL, None)  # No password needed if email is invalid
@@ -166,13 +144,13 @@ def test_special_character_search(setup_teardown ,search_query, expected_behavio
 
 
 
-def test_cart_1(setup_teardown):
+def test_cart_1(setup_teardown,perform_login):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(5)
    click_on_cart()
    check_if_zero()
 
-def test_cart_2(setup_teardown):
+def test_cart_2(setup_teardown,perform_login):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
@@ -181,7 +159,7 @@ def test_cart_2(setup_teardown):
 #    time.sleep(1)
    verify_cart()
 
-def test_cart_3(setup_teardown):
+def test_cart_3(setup_teardown,perform_login):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
@@ -192,7 +170,7 @@ def test_cart_3(setup_teardown):
    click_on_cart()
    click_on_add_button()
 
-def test_cart_4(setup_teardown):
+def test_cart_4(setup_teardown,perform_login):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    click_on_cart()
