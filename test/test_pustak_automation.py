@@ -6,17 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import Urls, DummyData, LocateById,LocateByClass,LocateByXpath
 
-@pytest.fixture(scope='function',autouse=True)
-def setup_teardown():
-    """Fixture to set up and tear down WebDriver."""
-    global driver
-    driver = webdriver.Chrome()
-    driver.get(Urls.LOGIN_URL)
-    driver.maximize_window()
-    yield
-    driver.quit()
-
-def perform_login(email, password):
+def perform_login(driver,email, password):
    
   WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, LocateById.LOGIN_BUTTON_ID))).click()
   if email:
@@ -33,15 +23,15 @@ def perform_login(email, password):
 
       WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, LocateByClass.POPUP_LOGIN_CLASS))).click()
 
-def add_to_cart():
+def add_to_cart(driver):
    add_to_cart=WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.ADD_TO_CART_XPATH)))
    add_to_cart.click()
    time.sleep(2)
    add_to_cart_final = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.ADD_TO_CART_FINAL_XPATH)))
    add_to_cart_final.click()
 
-def perform_search():
-  search_bar = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.SEARCH_BAR_XPATH)))
+def perform_search(driver):
+  search_bar = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, LocateByXpath.SEARCH_BAR_XPATH)))
   search_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
 
   
@@ -50,21 +40,21 @@ def perform_search():
 
   search_button.click()
    
-def login_and_search():
-  perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+def login_and_search(driver):
+  perform_login(driver,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
   time.sleep(2)
   perform_search()
 
 
-def verify_cart():
+def verify_cart(driver):
    added_to_cart=WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.BOOK_ADDED_TO_CART_XPATH))).text
    assert "Book added to cart!" in added_to_cart,"Book not added to cart"
 
-def click_on_cart():
+def click_on_cart(driver):
    cart=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.CART_ICON)))
    cart.click()
 
-def click_on_add_button():
+def click_on_add_button(driver):
    qunatity_before=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.QUANTITY))).text
    time.sleep(2)
    add_button=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.ADD_BUTTON)))
@@ -73,40 +63,40 @@ def click_on_add_button():
    qunatity_after=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.QUANTITY))).text
    assert int(qunatity_after)==int(qunatity_before)+1
 
-def check_if_zero():
+def check_if_zero(driver):
    zero=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.ZERO_XPATH)))
    assert zero.text=='My Cart (0)'
 
-def test_login_valid():
+def test_login_valid(setup_teardown):
   """Test login with valid credentials"""
-  perform_login(DummyData.CORRECT_EMAIL, DummyData.CORRECT_PASSWORD)
+  perform_login(setup_teardown,DummyData.CORRECT_EMAIL, DummyData.CORRECT_PASSWORD)
 
-  login_text = WebDriverWait(driver, 10).until(
+  login_text = WebDriverWait(setup_teardown, 10).until(
       EC.visibility_of_element_located((By.XPATH, LocateByXpath.LOGIN_BTN))
   ).text
   assert login_text == 'Hi! Reader', "Login was unsuccessful!"
 
-def test_login_invalid_password():
+def test_login_invalid_password(setup_teardown):
   """Test login with incorrect password"""
-  perform_login(DummyData.CORRECT_EMAIL, DummyData.INCORRECT_PASSWORD)
+  perform_login(setup_teardown,DummyData.CORRECT_EMAIL, DummyData.INCORRECT_PASSWORD)
 
-  error_message = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, LocateById.SNACKBAR_ID))).text
+  error_message = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.ID, LocateById.SNACKBAR_ID))).text
   assert "Entered email or password is incorrect" in error_message, "Incorrect password error not displayed!"
 
-def test_login_empty_email():
+def test_login_empty_email(setup_teardown):
     """Test login with empty email"""
     try:
-        perform_login(None, None)  # No password needed if email is empty
+        perform_login(setup_teardown,None, None)  # No password needed if email is empty
     except:
-        error_message = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_ERROR_XPATH))).text
+        error_message = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_ERROR_XPATH))).text
         assert "Enter valid email" in error_message, "Empty email error not displayed!"
 
-def test_login_incorrect_email():
+def test_login_incorrect_email(setup_teardown):
   """Test login with invalid email"""
   try:
-    perform_login(DummyData.INCORRECT_EMAIL, None)  # No password needed if email is invalid
+    perform_login(setup_teardown,DummyData.INCORRECT_EMAIL, None)  # No password needed if email is invalid
   except:
-    error_message = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_ERROR_XPATH))).text
+    error_message = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.EMAIL_ERROR_XPATH))).text
     assert "Enter valid email" in error_message, "Invalid email error not displayed!"
 
 @pytest.mark.parametrize("search_query, expected_result", [
@@ -115,10 +105,10 @@ def test_login_incorrect_email():
     ("TABLET and AnDroid","tablet and android")
 ])
 
-def test_search_functionality(search_query, expected_result):
+def test_search_functionality(setup_teardown,search_query, expected_result):
   """Generic test function for different search cases"""
-  search_bar = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.SEARCH_BAR_XPATH)))
-  search_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
+  search_bar = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.SEARCH_BAR_XPATH)))
+  search_button = WebDriverWait(setup_teardown, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
 
   # Enter search query (if provided)
   search_bar.clear()
@@ -128,10 +118,10 @@ def test_search_functionality(search_query, expected_result):
   search_button.click()
 
   # Wait for results to load
-  WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)))
+  WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)))
 
   # Fetch all displayed book titles
-  book_titles = driver.find_elements(By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)
+  book_titles = setup_teardown.find_elements(By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)
   
   # Validate results based on the search case
   if search_query == "Computer":
@@ -150,10 +140,10 @@ def test_search_functionality(search_query, expected_result):
     ("#", "#"),  # Test Search 3: Special characters
     ("!@#$%^&*()_+", "Unfortunately the page you are looking for has been moved or deleted")  # Test Search 4: All special characters
 ])
-def test_special_character_search( search_query, expected_behavior):
+def test_special_character_search(setup_teardown ,search_query, expected_behavior):
   """Test search functionality with special characters"""
-  search_bar = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.SEARCH_BAR_XPATH)))
-  search_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
+  search_bar = WebDriverWait(setup_teardown, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.SEARCH_BAR_XPATH)))
+  search_button = WebDriverWait(setup_teardown, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
 
   search_bar.clear()
   search_bar.send_keys(search_query)
@@ -161,29 +151,29 @@ def test_special_character_search( search_query, expected_behavior):
 
   try:
       # Check for error message
-      error_message = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.ERROR_MESSAGE_XPATH)))
+      error_message = WebDriverWait(setup_teardown, 5).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.ERROR_MESSAGE_XPATH)))
       assert error_message.text, f"Error displayed: {error_message.text}"
       print(f"✅ Search '{search_query}' caused an expected error: {error_message.text}")
   except:
       # If no error message appears, check if results are displayed
-      book_titles = driver.find_elements(By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)
+      book_titles = setup_teardown.find_elements(By.XPATH, LocateByXpath.RESULT_TITLES_XPATH)
       if book_titles:
           print(f"✅ Search '{search_query}' returned some results.")
       else:
           print(f"❌ No books found for search '{search_query}', and no error message shown.")
-          driver.save_screenshot(f"screenshot_{search_query}.png")
+          setup_teardown.save_screenshot(f"screenshot_{search_query}.png")
       assert len(book_titles) > 0, f"No books found for special character search: {search_query}"
 
 
 
-def test_cart_1():
-   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+def test_cart_1(setup_teardown):
+   perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(5)
    click_on_cart()
    check_if_zero()
 
-def test_cart_2():
-   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+def test_cart_2(setup_teardown):
+   perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
    time.sleep(2)
@@ -191,8 +181,8 @@ def test_cart_2():
 #    time.sleep(1)
    verify_cart()
 
-def test_cart_3():
-   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+def test_cart_3(setup_teardown):
+   perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
    time.sleep(2)
@@ -201,11 +191,8 @@ def test_cart_3():
    verify_cart()
    click_on_cart()
    click_on_add_button()
-# def test_add_to_cart():
-#   login_and_search()
-#   add_single_product_to_cart()
 
-def test_cart_4():
-   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+def test_cart_4(setup_teardown):
+   perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    click_on_cart()

@@ -10,7 +10,7 @@ class DummyData:
 class LocateById:
   LOGIN_BUTTON_ID = "loginBtn"
   SNACKBAR_ID = "notistack-snackbar"
-  ADD_BTN_ID='//*[@id="yousaved"]/div/div/button[2]'
+
  
 
 class LocateByClass:
@@ -31,4 +31,4 @@ class LocateByXpath:
   LOGIN_BTN='//button[@id="loginBtn"]/span'
   ADD_BUTTON='//*[@id="yousaved"]/div/div/button[2]'
   QUANTITY='//*[@id="yousaved"]/div/div/span[1]'
-  ZERO_XPATH='/html/body/main/div[3]/div/div/div/div[1]/div[1]/div[1]/div[1]/span/text()'
+  ZERO_XPATH='/html/body/main/div[3]/div/div/div/div[1]/div[1]/div[1]/div[1]/span/text()[2]'
