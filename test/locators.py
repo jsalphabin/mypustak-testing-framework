@@ -10,7 +10,8 @@ class DummyData:
 class LocateById:
   LOGIN_BUTTON_ID = "loginBtn"
   SNACKBAR_ID = "notistack-snackbar"
-  
+  ADD_BTN_ID='//*[@id="yousaved"]/div/div/button[2]'
+ 
 
 class LocateByClass:
   POPUP_LOGIN_CLASS = "WLoginNavbar_loginButton__M7mhW"
@@ -28,3 +29,6 @@ class LocateByXpath:
   BOOK_ADDED_TO_CART_XPATH="//span[contains(text(),'Book added to cart!')]"
   CART_ICON="//span[@id='cartIcon']"
   LOGIN_BTN='//button[@id="loginBtn"]/span'
+  ADD_BUTTON='//*[@id="yousaved"]/div/div/button[2]'
+  QUANTITY='//*[@id="yousaved"]/div/div/span[1]'
+  ZERO_XPATH='/html/body/main/div[3]/div/div/div/div[1]/div[1]/div[1]/div[1]/span/text()'

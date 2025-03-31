@@ -64,6 +64,18 @@ def click_on_cart():
    cart=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.CART_ICON)))
    cart.click()
 
+def click_on_add_button():
+   qunatity_before=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.QUANTITY))).text
+   time.sleep(2)
+   add_button=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.ADD_BUTTON)))
+   add_button.click()
+   time.sleep(2)
+   qunatity_after=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.QUANTITY))).text
+   assert int(qunatity_after)==int(qunatity_before)+1
+
+def check_if_zero():
+   zero=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.ZERO_XPATH)))
+   assert zero.text=='My Cart (0)'
 
 def test_login_valid():
   """Test login with valid credentials"""
@@ -163,14 +175,12 @@ def test_special_character_search( search_query, expected_behavior):
       assert len(book_titles) > 0, f"No books found for special character search: {search_query}"
 
 
+
 def test_cart_1():
    perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
-   time.sleep(2)
-   perform_search()
-   time.sleep(2)
-   add_to_cart()
-#    time.sleep(1)
-   verify_cart()
+   time.sleep(5)
+   click_on_cart()
+   check_if_zero()
 
 def test_cart_2():
    perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
@@ -180,7 +190,22 @@ def test_cart_2():
    add_to_cart()
 #    time.sleep(1)
    verify_cart()
+
+def test_cart_3():
+   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+   time.sleep(2)
+   perform_search()
+   time.sleep(2)
+   add_to_cart()
+   time.sleep(1)
+   verify_cart()
    click_on_cart()
+   click_on_add_button()
 # def test_add_to_cart():
 #   login_and_search()
 #   add_single_product_to_cart()
+
+def test_cart_4():
+   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+   time.sleep(2)
+   click_on_cart()
