@@ -1,6 +1,7 @@
 import pytest
 from selenium import webdriver
-from Helpers.LoginHelper import LoginHelper
+from helpers.login_helper import LoginHelper
+from helpers.search_helper import SearchHelper
 from locators import Urls
 
 @pytest.fixture(scope='function',autouse=True)
@@ -17,3 +18,9 @@ def perform_login():
     def _login(driver, email, password):
         return LoginHelper.perform_login(driver, email, password)
     return _login  
+
+@pytest.fixture
+def perform_search():
+    def _search(driver):
+        return SearchHelper.perform_search(driver)
+    return _search

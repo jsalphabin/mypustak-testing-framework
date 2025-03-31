@@ -13,16 +13,6 @@ def add_to_cart(driver):
    add_to_cart_final = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.ADD_TO_CART_FINAL_XPATH)))
    add_to_cart_final.click()
 
-def perform_search(driver):
-  search_bar = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, LocateByXpath.SEARCH_BAR_XPATH)))
-  search_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, LocateByXpath.SEARCH_BUTTON_XPATH)))
-
-  
-  search_bar.clear()
-  search_bar.send_keys("Computer")
-
-  search_button.click()
-
 
 def verify_cart(driver):
    added_to_cart=WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.BOOK_ADDED_TO_CART_XPATH))).text
@@ -150,7 +140,7 @@ def test_cart_1(setup_teardown,perform_login):
    click_on_cart()
    check_if_zero()
 
-def test_cart_2(setup_teardown,perform_login):
+def test_cart_2(setup_teardown,perform_login,perform_search):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
@@ -159,7 +149,7 @@ def test_cart_2(setup_teardown,perform_login):
 #    time.sleep(1)
    verify_cart()
 
-def test_cart_3(setup_teardown,perform_login):
+def test_cart_3(setup_teardown,perform_login,perform_search):
    perform_login(setup_teardown,DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
    time.sleep(2)
    perform_search()
