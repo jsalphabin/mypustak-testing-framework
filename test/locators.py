@@ -10,6 +10,7 @@ class DummyData:
 class LocateById:
   LOGIN_BUTTON_ID = "loginBtn"
   SNACKBAR_ID = "notistack-snackbar"
+  
 
 class LocateByClass:
   POPUP_LOGIN_CLASS = "WLoginNavbar_loginButton__M7mhW"
@@ -24,4 +25,6 @@ class LocateByXpath:
   EMAIL_ERROR_XPATH = '//div[@class="WLoginNavbar_loginDialogRightDiv__x6Kbk"]/form/div/div[1]/div/p'
   ADD_TO_CART_XPATH="//div[contains(@class,'search-page')]//button[contains(., 'Add to Cart')][1]"
   ADD_TO_CART_FINAL_XPATH = "(//button[contains(@class, 'Product_productAddtoCarddiv__hWTQk')])[1]"
-  BOOK_ADDED_TO_CART_XPATH=""
+  BOOK_ADDED_TO_CART_XPATH="//span[contains(text(),'Book added to cart!')]"
+  CART_ICON="//span[@id='cartIcon']"
+  LOGIN_BTN='//button[@id="loginBtn"]/span'

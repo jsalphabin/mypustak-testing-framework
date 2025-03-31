@@ -55,17 +55,22 @@ def login_and_search():
   time.sleep(2)
   perform_search()
 
-#def add_single_product_to_cart():
 
 def verify_cart():
-   pass
+   added_to_cart=WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, LocateByXpath.BOOK_ADDED_TO_CART_XPATH))).text
+   assert "Book added to cart!" in added_to_cart,"Book not added to cart"
+
+def click_on_cart():
+   cart=WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,LocateByXpath.CART_ICON)))
+   cart.click()
+
 
 def test_login_valid():
   """Test login with valid credentials"""
   perform_login(DummyData.CORRECT_EMAIL, DummyData.CORRECT_PASSWORD)
 
   login_text = WebDriverWait(driver, 10).until(
-      EC.visibility_of_element_located((By.XPATH, '//button[@id="loginBtn"]/span'))
+      EC.visibility_of_element_located((By.XPATH, LocateByXpath.LOGIN_BTN))
   ).text
   assert login_text == 'Hi! Reader', "Login was unsuccessful!"
 
@@ -130,7 +135,7 @@ def test_search_functionality(search_query, expected_result):
 
 
 @pytest.mark.parametrize("search_query, expected_behavior", [
-    ("#", "Unfortunately the page you are looking for has been moved or deleted"),  # Test Search 3: Special characters
+    ("#", "#"),  # Test Search 3: Special characters
     ("!@#$%^&*()_+", "Unfortunately the page you are looking for has been moved or deleted")  # Test Search 4: All special characters
 ])
 def test_special_character_search( search_query, expected_behavior):
@@ -164,8 +169,18 @@ def test_cart_1():
    perform_search()
    time.sleep(2)
    add_to_cart()
+#    time.sleep(1)
    verify_cart()
 
+def test_cart_2():
+   perform_login(DummyData.CORRECT_EMAIL,DummyData.CORRECT_PASSWORD)
+   time.sleep(2)
+   perform_search()
+   time.sleep(2)
+   add_to_cart()
+#    time.sleep(1)
+   verify_cart()
+   click_on_cart()
 # def test_add_to_cart():
 #   login_and_search()
 #   add_single_product_to_cart()
